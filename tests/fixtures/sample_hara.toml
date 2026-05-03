@@ -1,0 +1,62 @@
+# tests/fixtures/sample_hara.toml
+[server]
+host = "127.0.0.1"
+port = 9001
+
+[auth]
+token = "test-token"
+
+[api]
+max_message_length = 4000
+snippet_max_chars = 100
+open_docs = false
+
+[api.cors]
+allowed_origins = ["http://localhost:3000"]
+
+[models]
+hard = { provider = "openai", model = "gpt-5" }
+soft = { provider = "openai", model = "gpt-5-mini" }
+
+[models.sql]
+provider = "openai"
+model = "gpt-5-nano"
+
+[embeddings]
+provider = "openai"
+model = "text-embedding-3-small"
+
+[connectors.sql]
+type = "sqlite"
+path = "./test.db"
+
+[connectors.vector]
+type = "chromadb"
+persist_directory = "./test_chroma"
+
+[connectors.session_store]
+ttl_days = 14
+
+[verifier]
+mode = "signal"
+
+[agent]
+style = "Test style."
+language = "en"
+max_history_turns = 3
+turn_timeout_seconds = 60
+llm_timeout_seconds = 30
+sql_max_retries = 2
+sql_max_rows = 50
+text_search_k = 3
+
+[ingest]
+chunk_size = 1000
+chunk_overlap = 100
+
+[semantic_map]
+regenerate_on_ingest = false
+
+[logging]
+level = "DEBUG"
+format = "json"

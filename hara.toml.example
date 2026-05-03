@@ -1,0 +1,99 @@
+# HARA configuration template — copie para hara.toml e ajuste
+
+[server]
+host = "0.0.0.0"
+port = 8000
+
+[auth]
+# Pode vir de env: HARA_API_TOKEN
+token = ""
+
+[api]
+max_message_length = 8000
+snippet_max_chars = 200
+open_docs = true
+
+[api.cors]
+allowed_origins = []
+
+[models]
+hard = { provider = "openai", model = "gpt-5" }
+soft = { provider = "openai", model = "gpt-5-mini" }
+
+[embeddings]
+provider = "openai"
+model = "text-embedding-3-small"
+
+[providers.openai]
+[providers.anthropic]
+[providers.google]
+[providers.openrouter]
+[providers.ollama]
+base_url = "http://localhost:11434/v1"
+[providers.lmstudio]
+base_url = "http://localhost:1234/v1"
+
+[connectors.sql]
+type = "sqlite"
+path = "./data/hara.db"
+# Outras opções:
+#   type = "memory"             # in-memory SQLite, perde estado ao sair do processo (testes/dev)
+#   type = "postgres"           # requer extra: pip install hara[postgres]
+#   url = "postgresql://..."
+
+[connectors.vector]
+type = "chromadb"
+persist_directory = "./data/chroma"
+# Outras opções:
+#   type = "memory"             # ATENÇÃO: in-process, NÃO persiste entre invocações.
+#                               # `hara ingest` indexa, `hara semantic-map` sobe processo
+#                               # novo e encontra o store vazio → unstructured.yaml fica
+#                               # vazio. Use só para testes single-process via API Python,
+#                               # NUNCA via CLI multi-comando. Para rodar a CLI sem
+#                               # depender do extra chromadb, ainda assim use sqlite no
+#                               # SQL e desligue [semantic_map].regenerate_on_ingest.
+
+[connectors.session_store]
+ttl_days = 7
+# Por default, herda de [connectors.sql]. Pode ser sobrescrito:
+#   type = "sqlite"
+#   path = "./data/session.db"
+
+[paths]
+# Onde semantic-map / chat leem (e semantic-map escreve) structured.yaml e
+# unstructured.yaml. Connectors têm seus próprios paths em [connectors.*].
+data_dir = "./data"
+
+[verifier]
+# off    = não roda Verifier (default; mais rápido, menor custo).
+# signal = roda 1× ao final, popula metadata.verifier com
+#          {overall_pass, pct_supported, n_missing_aspects, weak_sentences}.
+#          NÃO bloqueia a resposta. +1 LLM call (modelo hard) por turno.
+mode = "off"
+
+[agent]
+# Estilo de voz que o Synthesizer recebe via <style> no prompt. Texto livre.
+style = "Responda de forma direta e profissional, em português brasileiro. Use linguagem clara e cite as fontes."
+language = "pt-BR"
+# Quantos turnos passados o Planner enxerga.
+max_history_turns = 5
+turn_timeout_seconds = 120
+llm_timeout_seconds = 60
+# SQL Executor retry loop em caso de erro de execução do connector.
+sql_max_retries = 3
+# LIMIT injetado quando o LLM omite. LIMIT existente acima de sql_max_rows
+# também é clampado para esse valor (Camada 1 do spec §13).
+sql_max_rows = 100
+# top-K na similarity_search por sub-query text.
+text_search_k = 5
+
+[ingest]
+chunk_size = 1500
+chunk_overlap = 200
+
+[semantic_map]
+regenerate_on_ingest = true
+
+[logging]
+level = "INFO"
+format = "pretty"

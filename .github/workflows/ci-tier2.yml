@@ -1,0 +1,40 @@
+name: CI Tier 2 (contracts + integration)
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+jobs:
+  contracts-and-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.11
+
+      - name: Install dependencies (all extras)
+        run: uv sync --all-extras --dev
+
+      - name: Pytest contracts (non-integration)
+        env:
+          OPENAI_API_KEY: sk-fake-for-tests
+        run: uv run pytest tests/contracts/ -v -m "not integration"
+
+      - name: Pytest contracts (integration with Docker)
+        env:
+          OPENAI_API_KEY: sk-fake-for-tests
+        run: uv run pytest tests/contracts/ -v -m integration
+
+      - name: Pytest integration
+        env:
+          OPENAI_API_KEY: sk-fake-for-tests
+          HARA_API_TOKEN: test-token
+        run: uv run pytest tests/integration/ -v

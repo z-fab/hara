@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: >-
+  Se você usa o HARA em pesquisa ou produto, por favor cite tanto o software
+  quanto a dissertação que originou a arquitetura.
+title: "HARA: Hybrid Agent for Retrieval and Answering"
+abstract: >-
+  HARA é um sistema multi-agente open-source para Q&A híbrido sobre dados
+  estruturados (CSV → SQL) e não-estruturados (PDFs, DOCX, Markdown, TXT →
+  vector store), com citações estruturadas via marcadores <ref:N>.
+type: software
+authors:
+  - family-names: Zillig
+    given-names: Fabricio
+license: MIT
+version: "0.1.0"
+date-released: "2026-05-03"
+repository-code: "https://github.com/z-fab/hara"
+keywords:
+  - retrieval-augmented-generation
+  - multi-agent
+  - llm
+  - hybrid-retrieval
+  - question-answering
+  - langgraph
+  - text-to-sql
+preferred-citation:
+  type: thesis
+  thesis-type: "Master's thesis"
+  title: "Arquitetura Multiagente Baseada em Modelos de Linguagem para Recuperação Híbrida de Informação"
+  authors:
+    - family-names: Zillig
+      given-names: Fabricio
+  institution:
+    name: "Universidade Presbiteriana Mackenzie"
+    address: "São Paulo, Brasil"
+  year: 2026
+  languages:
+    - pt

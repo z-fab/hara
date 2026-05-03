@@ -1,0 +1,38 @@
+name: CI Tier 1 (PR gate)
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.11
+
+      - name: Install dependencies (with all extras for full test coverage)
+        run: uv sync --all-extras --dev
+
+      - name: Ruff lint
+        run: uv run ruff check src/ tests/
+
+      - name: Ruff format check
+        run: uv run ruff format --check src/ tests/
+
+      - name: Pyright (strict on src/)
+        run: uv run pyright src/hara
+
+      - name: Pytest unit
+        env:
+          OPENAI_API_KEY: sk-fake-for-tests
+          HARA_API_TOKEN: test-token
+        run: uv run pytest tests/unit/ -v --cov=src/hara --cov-fail-under=80
